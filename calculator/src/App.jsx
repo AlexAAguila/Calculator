@@ -1,4 +1,4 @@
-import { useReducer, useState } from 'react'
+import { useReducer } from 'react'
 import DigitButton from './DigitButton'
 import OperationButton from './OperationButton'
 import './styles.css'
@@ -7,6 +7,7 @@ export const ACTIONS = {
   ADD_DIGIT : 'add-digit',
   CHOOSE_OPERATION: 'choose_operation',
   CLEAR: 'clear',
+  CLEAR_CURRENT: 'clear_current',
   DELETE_DIGIT: 'delete_digit',
   EVALUATE: 'evaluate'
 }
@@ -23,12 +24,13 @@ function reducer(state, {type, payload }) {
     }
     // if theres one 0 already then the "return state" means dont make any more changes (dont add another zero to the already existing zero)
     if (payload.digit === "0" && state.currentOperand === "0") {return state}
+    if (state.currentOperand == null && payload.digit === ".") {return state}
     if (payload.digit === "." && state.currentOperand.includes(".")) {return state}
-      return {
+    return {
         ...state,
         //either create a brand new operand with just our digit, or it'll add the digit onto the end of the current operand
         currentOperand: `${state.currentOperand || ""}${payload.digit}`,
-      }
+    }
     case ACTIONS.CHOOSE_OPERATION:
       if (state.currentOperand == null && state.previousOperand == null) {
         return state
@@ -97,6 +99,9 @@ function reducer(state, {type, payload }) {
     case ACTIONS.CLEAR:
       //return an empty state
       return {}
+    case ACTIONS.CLEAR_CURRENT:
+      if (state.currentOperand == null) {return state}
+      return {...state, currentOperand: null}
   }
 }
 
@@ -143,28 +148,28 @@ function App() {
         <div className='previous-operand'>{formatOperand(previousOperand)} {operation}</div>
         <div className='current-operand'>{formatOperand(currentOperand)}</div> 
       </div>
-      <button className='span-two' onClick={() => dispatch({type: ACTIONS.CLEAR})}>AC</button>
+      <button onClick={() => dispatch({type: ACTIONS.CLEAR})}>AC</button>
+      <button onClick={() => dispatch({type: ACTIONS.CLEAR_CURRENT})}>C</button>
       <button onClick={() => dispatch({type: ACTIONS.DELETE_DIGIT})}>DEL</button>
       <OperationButton operation="÷" dispatch={dispatch}>÷</OperationButton>
-      <DigitButton digit="1" dispatch={dispatch}>÷</DigitButton>
-      <DigitButton digit="2" dispatch={dispatch}>÷</DigitButton>
-      <DigitButton digit="3" dispatch={dispatch}>÷</DigitButton>
-      <OperationButton operation="*" dispatch={dispatch}>÷</OperationButton>
-      <DigitButton digit="4" dispatch={dispatch}>÷</DigitButton>
-      <DigitButton digit="5" dispatch={dispatch}>÷</DigitButton>
-      <DigitButton digit="6" dispatch={dispatch}>÷</DigitButton>
-      <OperationButton operation="+" dispatch={dispatch}>÷</OperationButton>
-      <DigitButton digit="7" dispatch={dispatch}>÷</DigitButton>
-      <DigitButton digit="8" dispatch={dispatch}>÷</DigitButton>
-      <DigitButton digit="9" dispatch={dispatch}>÷</DigitButton>
-      <OperationButton operation="-" dispatch={dispatch}>÷</OperationButton>
-      <DigitButton digit="." dispatch={dispatch}>÷</DigitButton>
-      <DigitButton digit="0" dispatch={dispatch}>÷</DigitButton>
+      <DigitButton digit="1" dispatch={dispatch}/>
+      <DigitButton digit="2" dispatch={dispatch}/>
+      <DigitButton digit="3" dispatch={dispatch}/>
+      <OperationButton operation="*" dispatch={dispatch}/>
+      <DigitButton digit="4" dispatch={dispatch}/>
+      <DigitButton digit="5" dispatch={dispatch}/>
+      <DigitButton digit="6" dispatch={dispatch}/>
+      <OperationButton operation="+" dispatch={dispatch}/>
+      <DigitButton digit="7" dispatch={dispatch}/>
+      <DigitButton digit="8" dispatch={dispatch}/>
+      <DigitButton digit="9" dispatch={dispatch}/>
+      <OperationButton operation="-" dispatch={dispatch}/>
+      <DigitButton digit="." dispatch={dispatch}/>
+      <DigitButton digit="0" dispatch={dispatch}/>
       <button className='span-two' onClick={() => dispatch({type: ACTIONS.EVALUATE})}>=</button>
 
     </div>
-  )
-    
+  )   
   
 }
 
