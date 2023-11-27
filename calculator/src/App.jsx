@@ -9,7 +9,15 @@ export const ACTIONS = {
   CLEAR: 'clear',
   CLEAR_CURRENT: 'clear_current',
   DELETE_DIGIT: 'delete_digit',
-  EVALUATE: 'evaluate'
+  EVALUATE: 'evaluate',
+  SIGN: 'sign',
+  PERCENTAGE: 'percentage',
+  SQUAREROOT: 'square_root',
+  MSTORE: 'memory_store',
+  MRECALL: 'memory_recall',
+  MCLEAR: 'memory_clear',
+  MPLUS: 'memory_plus',
+  MMINUS: 'memory_minus'
 }
 function reducer(state, {type, payload }) {
   switch(type) {
@@ -25,7 +33,7 @@ function reducer(state, {type, payload }) {
     // if theres one 0 already then the "return state" means dont make any more changes (dont add another zero to the already existing zero)
     if (payload.digit === "0" && state.currentOperand === "0") {return state}
     if (state.currentOperand == null && payload.digit === ".") {return state}
-    if (payload.digit === "." && state.currentOperand.includes(".")) {return state}
+    if (payload.digit === "." && state.currentOperand.includes(".")) {return state} 
     return {
         ...state,
         //either create a brand new operand with just our digit, or it'll add the digit onto the end of the current operand
@@ -53,6 +61,7 @@ function reducer(state, {type, payload }) {
           currentOperand: null,
         }
       }
+   
       return {
         ...state,
         previousOperand: evaluate(state),
@@ -98,12 +107,81 @@ function reducer(state, {type, payload }) {
       }
     case ACTIONS.CLEAR:
       //return an empty state
-      return {}
+      return {memory:state.memory}
     case ACTIONS.CLEAR_CURRENT:
       if (state.currentOperand == null) {return state}
       return {...state, currentOperand: null}
+
+    case ACTIONS.SIGN:
+      if (state.currentOperand == null)
+        return state;
+      
+      
+      return{
+        ...state,
+        currentOperand: (-parseFloat(state.currentOperand)).toString()
+      }
+
+      case ACTIONS.PERCENTAGE:
+        if (state.currentOperand == null)
+        return state;
+
+        return{
+          ...state,
+          currentOperand: (state.currentOperand/100).toString()
+        }
+        case ACTIONS.SQUAREROOT:
+          if (state.currentOperand == null)
+          return state;
+  
+          return{
+            ...state,
+            currentOperand: (Math.sqrt(state.currentOperand)).toString()
+          }
+        case ACTIONS.MSTORE:
+          if (state.currentOperand == null)
+            return state;
+    
+          return{
+              ...state,
+              memory: state.currentOperand
+            }
+            case ACTIONS.MRECALL:
+              if (state.memory == null)
+                return state;
+        
+              return{
+                  ...state,
+                  currentOperand: state.memory
+                }
+                case ACTIONS.MPLUS:
+                  if (state.currentOperand == null || state.memory == null)
+                    return state;
+            
+                  return{
+                      ...state,
+                      currentOperand: (parseFloat(state.currentOperand) + (parseFloat(state.memory))).toString()
+                    }
+                case ACTIONS.MMINUS:
+                      if (state.currentOperand == null || state.memory == null)
+                        return state;
+                
+                      return{
+                          ...state,
+                          currentOperand: (parseFloat(state.currentOperand) - (parseFloat(state.memory))).toString()
+                        }
+                 case ACTIONS.MCLEAR:
+                            return {...state,
+                              memory: ""
+                            }
+                            
+                    
+                          
+      
   }
 }
+
+
 
 function evaluate({currentOperand, previousOperand, operation}) {
   const previous = parseFloat(previousOperand)
@@ -140,17 +218,29 @@ function formatOperand(operand) {
 }
 
 function App() {
-  const [{currentOperand, previousOperand, operation}, dispatch] = useReducer(reducer, {})
+  const [{currentOperand, previousOperand, operation, memory}, dispatch] = useReducer(reducer, {})
   
   return (
     <div className="calculator-grid">
       <div className='output'>
+ <div className='memory'>
+  {formatOperand(memory)}
+  {memory !== null ? 'M' : ''}
+</div>
         <div className='previous-operand'>{formatOperand(previousOperand)} {operation}</div>
         <div className='current-operand'>{formatOperand(currentOperand)}</div> 
       </div>
       <button onClick={() => dispatch({type: ACTIONS.CLEAR})}>AC</button>
       <button onClick={() => dispatch({type: ACTIONS.CLEAR_CURRENT})}>C</button>
       <button onClick={() => dispatch({type: ACTIONS.DELETE_DIGIT})}>DEL</button>
+      <button onClick={() => dispatch({type: ACTIONS.SIGN})}>{"(+/-)"}</button>
+      <button onClick={() => dispatch({type: ACTIONS.PERCENTAGE})}>%</button>
+      <button onClick={() => dispatch({type: ACTIONS.SQUAREROOT})}>&radic;</button>
+      <button onClick={() => dispatch({type: ACTIONS.MSTORE})}>MS</button>
+      <button onClick={() => dispatch({type: ACTIONS.MRECALL})}>MR</button>
+      <button onClick={() => dispatch({type: ACTIONS.MCLEAR})}>MC</button>
+      <button onClick={() => dispatch({type: ACTIONS.MPLUS})}>M+</button>
+      <button onClick={() => dispatch({type: ACTIONS.MMINUS})}>M-</button>
       <OperationButton operation="÷" dispatch={dispatch}>÷</OperationButton>
       <DigitButton digit="1" dispatch={dispatch}/>
       <DigitButton digit="2" dispatch={dispatch}/>
