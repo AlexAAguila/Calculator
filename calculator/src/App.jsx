@@ -1,35 +1,171 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useReducer, useState } from 'react'
+import DigitButton from './DigitButton'
+import OperationButton from './OperationButton'
+import './styles.css'
+
+export const ACTIONS = {
+  ADD_DIGIT : 'add-digit',
+  CHOOSE_OPERATION: 'choose_operation',
+  CLEAR: 'clear',
+  DELETE_DIGIT: 'delete_digit',
+  EVALUATE: 'evaluate'
+}
+function reducer(state, {type, payload }) {
+  switch(type) {
+    case ACTIONS.ADD_DIGIT: 
+    // if overwrite is true then clear the current operand and replace it with the new entered digit, then set overwrite to false after
+    if (state.overwrite) {
+      return {
+        ...state,
+        currentOperand: payload.digit,
+        overwrite: false
+      }
+    }
+    // if theres one 0 already then the "return state" means dont make any more changes (dont add another zero to the already existing zero)
+    if (payload.digit === "0" && state.currentOperand === "0") {return state}
+    if (payload.digit === "." && state.currentOperand.includes(".")) {return state}
+      return {
+        ...state,
+        //either create a brand new operand with just our digit, or it'll add the digit onto the end of the current operand
+        currentOperand: `${state.currentOperand || ""}${payload.digit}`,
+      }
+    case ACTIONS.CHOOSE_OPERATION:
+      if (state.currentOperand == null && state.previousOperand == null) {
+        return state
+      }
+      // if you mistyped your previous operation and want to correct it
+      if (state.currentOperand == null)
+      return {
+    //return the number we had previously
+        ...state,
+        //but replace the operation with the newly typed one
+        operation: payload.operation,
+      }
+      if (state.previousOperand == null) {
+        return {
+          ...state,
+          operation: payload.operation,
+          // make the current operand the previous operand
+          previousOperand: state.currentOperand,
+          // so we can type in our new operand
+          currentOperand: null,
+        }
+      }
+      return {
+        ...state,
+        previousOperand: evaluate(state),
+        operation: payload.operation,
+        currentOperand: null
+      }
+    case ACTIONS.EVALUATE:
+      // if we dont have all the info we need to execute the operation
+      if (state.operation == null || state.currentOperand == null || state.previousOperand == null) {
+        // do nothing at all when you click the = button
+        return state
+      }
+      //calculate the expression if you have everything needed
+      return {
+        ...state,
+        // if you type in a number after the operation occurs, clear the console instead of appending more numbers to the end of your result
+        overwrite: true,
+        previousOperand: null,
+        //null because no additional operation is passed, just the =
+        operation: null,
+        currentOperand: evaluate(state)
+      }
+    case ACTIONS.DELETE_DIGIT:
+      //if in overwrite state, return empty object
+      if (state.overwrite) {
+        return {
+          ...state,
+          overwrite: false,
+          currentOperand: null
+        }
+      } 
+      // if the current operand has no digit then dont do anything
+      if (state.currentOperand == null) {return state}
+      //if theres only one digit left in our operand then completely remove it
+      if (state.currentOperand.length === 1) {
+        //reset current operand to null instead of leaving an empty string
+        return {...state, currentOperand: null}
+      }
+      return {
+        ...state,
+        //remove last digit from current operand
+        currentOperand: state.currentOperand.slice(0,-1)
+      }
+    case ACTIONS.CLEAR:
+      //return an empty state
+      return {}
+  }
+}
+
+function evaluate({currentOperand, previousOperand, operation}) {
+  const previous = parseFloat(previousOperand)
+  const current = parseFloat(currentOperand)
+  if (isNaN(previous) || isNaN(current)) return ""
+  let computation = ""
+  switch (operation) {
+    case "+":
+      computation = previous + current
+      break
+    case "-":
+      computation = previous - current
+      break
+    case "÷":
+      computation = previous / current
+      break
+    case "*":
+      computation = previous * current
+      break
+    
+  }
+  return computation.toString()
+}
+const INTEGER_FORMATTER = new Intl.NumberFormat('en-us', {
+  maximumFractionDigits: 0,
+})
+
+function formatOperand(operand) {
+  if (operand == null) return
+  const [integer, decimal] = operand.split('.')
+  if (decimal == null) return INTEGER_FORMATTER.format(integer)
+  //only format the portion before the decimal place
+  return `${INTEGER_FORMATTER.format(integer)}.${decimal}`
+}
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  const [{currentOperand, previousOperand, operation}, dispatch] = useReducer(reducer, {})
+  
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="calculator-grid">
+      <div className='output'>
+        <div className='previous-operand'>{formatOperand(previousOperand)} {operation}</div>
+        <div className='current-operand'>{formatOperand(currentOperand)}</div> 
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      <button className='span-two' onClick={() => dispatch({type: ACTIONS.CLEAR})}>AC</button>
+      <button onClick={() => dispatch({type: ACTIONS.DELETE_DIGIT})}>DEL</button>
+      <OperationButton operation="÷" dispatch={dispatch}>÷</OperationButton>
+      <DigitButton digit="1" dispatch={dispatch}>÷</DigitButton>
+      <DigitButton digit="2" dispatch={dispatch}>÷</DigitButton>
+      <DigitButton digit="3" dispatch={dispatch}>÷</DigitButton>
+      <OperationButton operation="*" dispatch={dispatch}>÷</OperationButton>
+      <DigitButton digit="4" dispatch={dispatch}>÷</DigitButton>
+      <DigitButton digit="5" dispatch={dispatch}>÷</DigitButton>
+      <DigitButton digit="6" dispatch={dispatch}>÷</DigitButton>
+      <OperationButton operation="+" dispatch={dispatch}>÷</OperationButton>
+      <DigitButton digit="7" dispatch={dispatch}>÷</DigitButton>
+      <DigitButton digit="8" dispatch={dispatch}>÷</DigitButton>
+      <DigitButton digit="9" dispatch={dispatch}>÷</DigitButton>
+      <OperationButton operation="-" dispatch={dispatch}>÷</OperationButton>
+      <DigitButton digit="." dispatch={dispatch}>÷</DigitButton>
+      <DigitButton digit="0" dispatch={dispatch}>÷</DigitButton>
+      <button className='span-two' onClick={() => dispatch({type: ACTIONS.EVALUATE})}>=</button>
+
+    </div>
   )
+    
+  
 }
 
 export default App
