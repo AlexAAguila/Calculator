@@ -139,9 +139,10 @@ function reducer(state, {type, payload }) {
             currentOperand: (Math.sqrt(state.currentOperand)).toString()
           }
         case ACTIONS.MSTORE:
+
           if (state.currentOperand == null)
             return state;
-    
+          
           return{
               ...state,
               memory: state.currentOperand
@@ -155,7 +156,7 @@ function reducer(state, {type, payload }) {
                   currentOperand: state.memory
                 }
                 case ACTIONS.MPLUS:
-                  if (state.currentOperand == null || state.memory == null)
+                  if (state.currentOperand == null || state.memory == undefined || state.memory == "")
                     return state;
             
                   return{
@@ -163,7 +164,7 @@ function reducer(state, {type, payload }) {
                       currentOperand: (parseFloat(state.currentOperand) + (parseFloat(state.memory))).toString()
                     }
                 case ACTIONS.MMINUS:
-                      if (state.currentOperand == null || state.memory == null)
+                      if (state.currentOperand == null || state.memory == undefined || state.memory == "")
                         return state;
                 
                       return{
@@ -223,9 +224,8 @@ function App() {
   return (
     <div className="calculator-grid">
       <div className='output'>
- <div className='memory'>
-  {formatOperand(memory)}
-  {memory !== null ? 'M' : ''}
+      <div className='memory'>
+  {(memory !==undefined && memory !=="" ) ? <span>M</span> : null}
 </div>
         <div className='previous-operand'>{formatOperand(previousOperand)} {operation}</div>
         <div className='current-operand'>{formatOperand(currentOperand)}</div> 
