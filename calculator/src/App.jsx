@@ -230,33 +230,55 @@ function App() {
         <div className='previous-operand'>{formatOperand(previousOperand)} {operation}</div>
         <div className='current-operand'>{formatOperand(currentOperand)}</div> 
       </div>
-      <button onClick={() => dispatch({type: ACTIONS.CLEAR})}>AC</button>
-      <button onClick={() => dispatch({type: ACTIONS.CLEAR_CURRENT})}>C</button>
-      <button onClick={() => dispatch({type: ACTIONS.DELETE_DIGIT})}>DEL</button>
-      <button onClick={() => dispatch({type: ACTIONS.SIGN})}>{"(+/-)"}</button>
-      <button onClick={() => dispatch({type: ACTIONS.PERCENTAGE})}>%</button>
-      <button onClick={() => dispatch({type: ACTIONS.SQUAREROOT})}>&radic;</button>
-      <button onClick={() => dispatch({type: ACTIONS.MSTORE})}>MS</button>
-      <button onClick={() => dispatch({type: ACTIONS.MRECALL})}>MR</button>
-      <button onClick={() => dispatch({type: ACTIONS.MCLEAR})}>MC</button>
-      <button onClick={() => dispatch({type: ACTIONS.MPLUS})}>M+</button>
-      <button onClick={() => dispatch({type: ACTIONS.MMINUS})}>M-</button>
-      <OperationButton operation="÷" dispatch={dispatch}>÷</OperationButton>
-      <DigitButton digit="1" dispatch={dispatch}/>
-      <DigitButton digit="2" dispatch={dispatch}/>
-      <DigitButton digit="3" dispatch={dispatch}/>
-      <OperationButton operation="*" dispatch={dispatch}/>
-      <DigitButton digit="4" dispatch={dispatch}/>
-      <DigitButton digit="5" dispatch={dispatch}/>
-      <DigitButton digit="6" dispatch={dispatch}/>
-      <OperationButton operation="+" dispatch={dispatch}/>
+      {/* <div class="div-DEL">
+        <button className='DEL'onClick={() => dispatch({type: ACTIONS.DELETE_DIGIT})}>DEL</button>
+      </div> */}
+
+      <DigitButton digit="." dispatch={dispatch} className="dot"/>
+      <button className='MS' onClick={() => dispatch({type: ACTIONS.MSTORE})}>MS</button>
+      <button className='MC' onClick={() => dispatch({type: ACTIONS.MCLEAR})}>MC</button>
+      <button className='MR' onClick={() => dispatch({type: ACTIONS.MRECALL})}>MR</button>
+      <button className='Mplus' onClick={() => dispatch({type: ACTIONS.MPLUS})}>M+</button>
+      <button className='Mminus' onClick={() => dispatch({type: ACTIONS.MMINUS})}>M-</button>
+
+      <button className='AC' onClick={() => dispatch({type: ACTIONS.CLEAR})}>AC</button>
       <DigitButton digit="7" dispatch={dispatch}/>
       <DigitButton digit="8" dispatch={dispatch}/>
       <DigitButton digit="9" dispatch={dispatch}/>
-      <OperationButton operation="-" dispatch={dispatch}/>
-      <DigitButton digit="." dispatch={dispatch}/>
+      <OperationButton operation="*" dispatch={dispatch}/>
+      <OperationButton operation="÷" dispatch={dispatch}>÷</OperationButton>
+
+      <button className='C' onClick={() => dispatch({type: ACTIONS.CLEAR_CURRENT})}>C</button>
+      <DigitButton digit="4" dispatch={dispatch}/>
+      <DigitButton digit="5" dispatch={dispatch}/>
+      <DigitButton digit="6" dispatch={dispatch}/>
+      <OperationButton strOperation="plus" operation="+" dispatch={dispatch}/>    
+      <OperationButton strOperation="minus" operation="-" dispatch={dispatch}/>
+
+      <button className='pos-neg' onClick={() => dispatch({type: ACTIONS.SIGN})}>{"(+/-)"}</button>
+      <DigitButton className='One' digit="1" dispatch={dispatch}/>
+      <DigitButton digit="2" dispatch={dispatch}/>
+      <DigitButton digit="3" dispatch={dispatch}/>
+
+      
+      
+      <button className='percent' onClick={() => dispatch({type: ACTIONS.PERCENTAGE})}>%</button>
+      <button className='sqrt' onClick={() => dispatch({type: ACTIONS.SQUAREROOT})}>&radic;</button>
       <DigitButton digit="0" dispatch={dispatch}/>
-      <button className='span-two' onClick={() => dispatch({type: ACTIONS.EVALUATE})}>=</button>
+      <button className='DEL'onClick={() => dispatch({type: ACTIONS.DELETE_DIGIT})}>DEL</button>
+      <button className='span-two equals'  onClick={() => dispatch({type: ACTIONS.EVALUATE})}>=</button>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
 
     </div>
   )   
