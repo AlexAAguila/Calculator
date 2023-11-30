@@ -245,8 +245,8 @@ function App() {
       <DigitButton digit="7" dispatch={dispatch}/>
       <DigitButton digit="8" dispatch={dispatch}/>
       <DigitButton digit="9" dispatch={dispatch}/>
-      <OperationButton operation="*" dispatch={dispatch}/>
-      <OperationButton operation="÷" dispatch={dispatch}>÷</OperationButton>
+      <OperationButton strOperation="multiply" operation="*" dispatch={dispatch}/>
+      <OperationButton strOperation="division" operation="÷" dispatch={dispatch}>÷</OperationButton>
 
       <button className='C' onClick={() => dispatch({type: ACTIONS.CLEAR_CURRENT})}>C</button>
       <DigitButton digit="4" dispatch={dispatch}/>
