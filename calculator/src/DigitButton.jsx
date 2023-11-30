@@ -3,5 +3,6 @@ import { ACTIONS } from "./App"
 // eslint-disable-next-line react/prop-types, no-unused-vars
 export default function DigitButton({dispatch, digit}) {
     //this button has an onClick event that calls the add_digit function, and passes along the digit we want to add from app.js
-    return <button onClick={() => dispatch({type: ACTIONS.ADD_DIGIT, payload: {digit}})} >{digit}</button>
+    const escapedDigit = escape(digit);
+    return <button className={`btn btn-${escapedDigit}`}onClick={() => dispatch({type: ACTIONS.ADD_DIGIT, payload: {digit}})} >{digit}</button>
 }
