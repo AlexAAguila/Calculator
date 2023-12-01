@@ -211,12 +211,21 @@ const INTEGER_FORMATTER = new Intl.NumberFormat('en-us', {
 })
 
 function formatOperand(operand) {
-  if (operand == null) return
-  const [integer, decimal] = operand.split('.')
-  if (decimal == null) return INTEGER_FORMATTER.format(integer)
-  //only format the portion before the decimal place
-  return `${INTEGER_FORMATTER.format(integer)}.${decimal}`
+  if (operand == null) return;
+
+  const [integer, decimal] = operand.split('.');
+  if (decimal == null) return INTEGER_FORMATTER.format(integer);
+
+  // Check the length of the decimal part
+  if (decimal.length > 2) {
+    // If the decimal part exceeds 2 digits, return the number in exponential notation
+    return parseFloat(operand).toExponential(2);
+  }
+
+  // Format the number with two decimal places
+  return `${parseFloat(operand).toFixed(2)}`;
 }
+
 
 function App() {
   const [{currentOperand, previousOperand, operation, memory}, dispatch] = useReducer(reducer, {})
